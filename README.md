@@ -71,7 +71,8 @@ The MVP is implemented in **Node.js** to simulate the asynchronous fetch and agg
 
 ## Known issues
 
- - Small Payload Failure: a JSON had 5 keys. If 2 keys are volatile (time, generationtime, etc.), those 2 keys alone accumulate enough distance to push the total Robust Deviation Score (RDS) above the strict MAX_ACCEPTABLE_DISTANCE of 10.0, leading to a failure. This leads to multiple tries before success. This could be fixed by adding excepted fields input, that are voilatile but aren't important data, so they aren't taken into consideration. Penalty(confidence) mechanism could be improved heavily. 
+ - Small Payload Failure: a JSON had 5 keys. If 2 keys are volatile (time, generationtime, etc.), those 2 keys alone accumulate enough distance to push the total Robust Deviation Score (RDS) above the strict MAX_ACCEPTABLE_DISTANCE of 10.0, leading to a failure. This leads to multiple tries before success. This could be fixed by adding exception fields input, that are voilatile but aren't important data, so they aren't taken into consideration.
+ - Penalty(confidence) mechanism could be improved heavily, but provides a idea on how it could work in future.
 
 ## ▶️ Running the Simulation
 
