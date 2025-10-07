@@ -2,6 +2,7 @@
 
 
 This project outlines and simulates a core component of a decentralized oracle system: a **resilient data aggregation engine** capable of reaching consensus on any data type (prices, strings, complex JSON) without relying on hardcoded keys. This is only a MVP and there is a lot of room for improvement.
+It operates autonomously—it requires no predefined schemas or manual blacklists. This flexibility allows it to adapt instantly to any JSON data structure, from financial market feeds to complex data.
 
 ---
 
@@ -33,10 +34,12 @@ The difference between any two JSON objects (JSON A and JSON B) is calculated by
 | Field Type           | Distance Metric                                                                 | Rationale                                              | Penalty Weight |
 |----------------------|----------------------------------------------------------------------------------|--------------------------------------------------------|----------------|
 | String / Boolean     | Fixed Penalty (if mismatch)                                                     | Strict Consensus: Treats identifiers/statuses as critical. | 1000           |
-| Numeric (Price, Temp)| `100 × (A - B) / Mean(A, B)` (Scaled Relative Difference)                        | Accepts minor legitimate deviation.                    | -              |
+| Numeric (Price, Temp)| Scaled Relative Difference (a percentage comparison)                        | Accepts minor legitimate deviation.                    | -              |
 | Structural           | Fixed Penalty                                                                   | Critical Failure: Heavily penalizes schema tampering. | 5000           |
 
 ---
+
+Uses Scaled Relative Difference (a percentage comparison). This penalizes a 10% price deviation far more heavily than a 0.01% market drift. The system is tuned to accept small, real-time volatility while rejecting major errors.
 
 ### 3. Outlier Defense & Final Vote
 
@@ -61,21 +64,20 @@ The MVP is implemented in **Node.js** to simulate the asynchronous fetch and agg
 
 | Setting                  | Value   | Rationale                                       |
 |--------------------------|---------|-------------------------------------------------|
-| `N_NODES`                | 10      | Simulated network size                          |
+| `N_NODES`                | 100      | Simulated network size                          |
 | `CONSENSUS_THRESHOLD_PCT`| 60%     | Required network agreement (6 out of 10 nodes)  |
 | `MAX_ACCEPTABLE_DISTANCE`| 10.0    | Strict distance tolerance                       |
 
-> This threshold enforces near-zero tolerance for string/structural mismatches and very low numeric volatility.
+> This threshold enforces near-zero tolerance for string/structural mismatches and very low numeric volatility. it Could still be heavily improved.
 
 ---
 
-## Known issues
 
- - Small Payload Failure: a JSON had 5 keys. If 2 keys are volatile (time, generationtime, etc.), those 2 keys alone accumulate enough distance to push the total Robust Deviation Score (RDS) above the strict MAX_ACCEPTABLE_DISTANCE of 10.0, leading to a failure. This leads to multiple tries before success. This could be fixed by adding exception fields input, that are voilatile but aren't important data, so they aren't taken into consideration.
- - Penalty(confidence) mechanism could be improved heavily, but provides a idea on how it could work in future.
 
 ## ▶️ Running the Simulation
 
 ```bash
 # Clone or download the script
 # Run the simulation (the script does not require external arguments as it mocks all data)
+# check src/mockAPI to set testing to real API
+npm start
