@@ -1,0 +1,10 @@
+{
+  "name": "oracle-consensus-mvp",
+  "version": "1.0.0",
+  "description": "MVP for Decentralise oracle solution",
+  "main": "runner.js",
+  "type": "module",
+  "scripts": {
+    "start": "node runner.js"
+  }
+}
