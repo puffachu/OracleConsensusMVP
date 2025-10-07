@@ -16,6 +16,22 @@ The system achieves **"liquidity"** by abandoning type-specific aggregation (lik
 
 ---
 
+## 💡 Core Innovation: Statistical Volatility Acceptance (SVA)
+The SVA is the mathematical engine that solves the "noise problem"—a flaw that causes traditional consensus systems to fail when presented with real-world data containing fluctuating timestamps or unique identifiers.
+
+### Why SVA Is Necessary
+Fields like "generationtime" or unique transaction IDs are harmless, but they change on every node's fetch. Our powerful Scaled Relative Difference formula (which uses percentages for comparison) sees these tiny, near-zero values change frequently and calculates an artificially massive distance score. This common noise poisons the system, making the entire consensus cluster appear volatile, leading to consensus failure.
+
+### SVA Mechanism:
+#### 1. Measure Baseline Volatility: 
+The system calculates the Median Pairwise Distance (MPDk) for every single numeric key (k) in the response across the entire network. This MPD establishes the "normal" systemic volatility (or noise level) for that field.
+
+#### 2. Neutralize Shared Noise:
+During the final score calculation, this MPDk is subtracted from the distance contributed by that field.
+
+#### 3. Result:
+This normalization neutralizes the shared, harmless distance, causing the net score contribution for that field to drop to zero. The Robust Deviation Score (RDS) then reflects only unique, non-systemic deviations—the true "odd ones out."
+
 ## 🛠️ Mechanism Overview
 
 The aggregation process is divided into **three key phases**:
@@ -73,11 +89,32 @@ The MVP is implemented in **Node.js** to simulate the asynchronous fetch and agg
 ---
 
 
+## Known Limitation: Volatile String Consensus
 
+The current implementation treats all string fields (e.g., symbol, status, hash, signature) under the Strict Consensus model.
+
+- The Issue: If a data feed includes fields that are expected to be unique for every fetch (e.g., _hash, request_id, or signature), the system will correctly see 10 different unique strings and apply the massive 1000 penalty to every single pairwise distance.
+- Result: The entire consensus fails because the RDS score for every node jumps to ≥1000, classifying all valid data as outliers, even though the core data is correct.
+
+Future Implementation Note: This requires the system to implement Automatic String Volatility Filtering (ASVF) to identify fields where every node returns a globally unique string value.
+
+---
 ## ▶️ Running the Simulation
 
+### Configuration
+The primary configuration is in src/data/mockApi.js:
 ```bash
-# Clone or download the script
-# Run the simulation (the script does not require external arguments as it mocks all data)
-# check src/mockAPI to set testing to real API
+const TEST_REAL_API = true; // Set to false to run the MOCK SCENARIO
+const REAL_API_URL = ; // add your api
+```
+#### Execution
+
+```bash
 npm start
+```
+
+OR 
+
+```bash
+node runner.js
+```
